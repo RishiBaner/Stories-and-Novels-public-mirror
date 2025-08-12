@@ -16,5 +16,5 @@ jobs:
       - name: Enable auto-merge
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
-          token: ${{ secrets.MIRRORKEY }}
+          token: ${{ secrets.MIRRORKEY }} # Using your PAT
           merge-method: squash
