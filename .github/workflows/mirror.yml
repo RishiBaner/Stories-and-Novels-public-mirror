@@ -8,18 +8,24 @@ jobs:
   mirror:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout private repo
+      - name: Checkout private repo (no stored creds)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false   # <-- critical
 
-      - name: Push to public mirror
-        env:
-          MIRROR_TOKEN: ${{ secrets.MIRRORKEY }} # Uses your PAT
+      - name: Configure git
         run: |
           git config --global user.name "mirror-bot"
           git config --global user.email "mirror-bot@users.noreply.github.com"
+
+      - name: Add mirror remote (PAT)
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRRORKEY }}
+        run: |
           git remote add mirror https://x-access-token:${MIRROR_TOKEN}@github.com/RishiBaner/Stories-and-Novels-public-mirror.git
-          echo "Remote URL (sanitized): https://x-access-token:***@github.com/RishiBaner/Stories-and-Novels-public-mirror.git"
-          git ls-remote https://x-access-token:${MIRROR_TOKEN}@github.com/RishiBaner/Stories-and-Novels-public-mirror.git
+          git remote -v
+
+      - name: Push to public mirror
+        run: |
           git push --force --tags mirror main:main
